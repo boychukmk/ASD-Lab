@@ -1,0 +1,368 @@
+using System.Diagnostics;
+using System.Collections.Generic;
+
+menu();
+
+static void menu()
+{
+    char command; 
+    do
+    {
+        Console.WriteLine("Menu of command");
+        Console.WriteLine("1 Work with array");
+        Console.WriteLine("2 Work with list");
+        Console.WriteLine("0 Exit");
+        Console.WriteLine("select of command, press number of key");
+        command = (char)Console.Read();
+        Console.ReadLine();
+        switch (command)
+        {
+            case '1': WORKwithARRAY(); break;
+            case '2': WORKwithLIST(); break;
+            case '0': Console.WriteLine("Bye!"); break;
+            default: Console.WriteLine("wrong command"); break;
+        }
+        
+    } while (command != '0');
+} //end of Menu()
+
+
+
+
+static void WORKwithLIST()
+{
+    LinkedList<int> list1 = new LinkedList<int>();
+    Console.WriteLine("Enter length of list: ");
+    int n = Convert.ToInt32(Console.ReadLine());
+    GenList(ref list1, n);
+    PrintList( list1);
+    BruteforceSearch(list1);
+    Console.WriteLine("--------------------------------------");
+    BarrierSearch(list1);
+    Console.WriteLine("--------------------------------------");
+    BinarySearch(list1 );
+}
+
+
+static void WORKwithARRAY()
+{
+    Console.WriteLine("Enter length of array");
+    int n = Convert.ToInt32(Console.ReadLine());
+    int[] array1 = new int[n];
+
+    arraygenerate(array1);
+    Console.WriteLine("Your array: ");
+    arrayprint(array1);
+    bruteforceSearch(array1);
+    Console.WriteLine("--------------------------------------");
+    barrierSearch(array1);
+    Console.WriteLine("--------------------------------------");
+    binarSearch(array1);
+    Console.WriteLine("--------------------------------------");
+    goldMiddle(array1);
+}
+
+static void arraygenerate(int[] arr)
+{
+    // Random - клас для генерації випадкових чисел
+    Random aRand = new Random();
+    // заповнення масиву
+    for (int i = 0; i < arr.Length; i++)
+        arr[i] = aRand.Next(50);
+}
+
+static void arrayprint(int[] arr)
+{
+    //Console.WriteLine("Your array: ");
+    for (int i = 0; i < arr.Length; i++)
+        Console.Write(arr[i] + "  ");
+    Console.WriteLine();
+}
+/// <summary>
+///  brute-force search. Array
+/// </summary>
+static void bruteforceSearch(int [] arr)
+{
+    bool Found = false;
+    Console.WriteLine(" Enter value to search with brute-forced method: ");
+    int x = Convert.ToInt32(Console.ReadLine());
+    var time = new Stopwatch();
+    {
+        time.Start();
+
+        for (int i = 0; i < arr.Length; i++)
+        {
+            if (arr[i] == x)
+            {
+                time.Stop();
+                Console.WriteLine("Value '{0}' is found with index '{1}'", x, i);
+                Found = true;
+            }
+        }
+       
+        if (Found == false)
+        {
+            time.Stop();
+            Console.WriteLine("Element doesn`t exist in array. Do you want to try again? 0 - to exit");
+            int key = Convert.ToInt32(Console.ReadLine());
+            if (key != 0) bruteforceSearch(arr);
+        }
+
+       // time.Stop();
+        Console.WriteLine("Time spend : {0} ticks", time.ElapsedTicks);
+    }   
+}
+/// <summary>
+/// Barrier search. Array
+/// </summary>
+static void barrierSearch(int[] arr)
+{
+    Console.WriteLine(" Enter value to search with barrier method: ");
+    int barrier = Convert.ToInt32(Console.ReadLine());
+    int [] newArray = new int[arr.Length+1];
+    newArray[arr.Length] = barrier;
+
+    for (int i = 0;i < arr.Length;i++)
+        newArray[i]=arr[i];
+
+    for(int i = arr.Length;i < arr.Length;i++)
+        newArray[i+1]=arr[i];
+
+    arr= newArray;
+    //Console.WriteLine(" YOur array with barrier: ");
+    //arrayprint(arr);
+    var time = new Stopwatch();
+    time.Start();
+    int j = 0;
+    while (arr[j]!=barrier)
+        j++;
+    if (arr[j]==barrier)
+        Console.WriteLine("Value '{0}' is found with index '{1}'", barrier, j);
+
+    time.Stop();
+    Console.WriteLine("Time spend : {0} ticks", time.ElapsedTicks);
+}
+/// <summary>
+///  Array Sort
+/// </summary>
+static void sortArr(int [] arr)
+{
+    int temp; 
+
+    for (int i = 0; i < arr.Length - 1; i++)
+    {
+        for (int j = 0; j < arr.Length - i - 1; j++)
+        {
+            if (arr[j] < arr[j + 1])
+            {
+                // меняем элементы местами
+                temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+    arrayprint(arr);
+}
+/// <summary>
+/// Binar search. Array
+/// </summary>
+static void binarSearch(int [] arr)
+{
+    Console.WriteLine(" Enter value to search with binar method: ");
+    int x = Convert.ToInt32(Console.ReadLine());
+    var time = new Stopwatch();
+    Console.WriteLine(" To start binar search we need to sort array: ");
+    sortArr(arr);
+    time.Start();
+    bool flag = false;
+   int L = 0;
+   int R = arr.Length; 
+   int middle;                             
+    while (L < R)
+    {
+        middle = L + (R - L) / 2;
+        if (x > arr[middle])  
+            R = middle; 
+        else if (x < arr[middle])
+            L = middle + 1;  
+        else
+        { 
+            flag = true; 
+            break;
+        } 
+    }
+    if (flag == true)
+    {
+        middle =  L + (R - L) / 2;
+        time.Stop();
+        Console.WriteLine("Value '{0}' found with index '{1}'" , x ,  middle);
+    }
+    else Console.WriteLine("Element doesn`t exist in our array! ");
+    Console.WriteLine("Time spend : {0} ticks", time.ElapsedTicks);
+
+}
+/// <summary>
+/// Gold middle search. Array
+/// </summary>
+static void goldMiddle(int [] arr)
+{
+    sortArr(arr);
+    Console.Write("Please, enter number to find: ");
+    int num = Convert.ToInt32(Console.ReadLine());
+
+    var time = new Stopwatch();
+    time.Start();
+
+    
+    bool  found = false;
+    int L = 0;
+    int R = arr.Length - 1;
+    while ((R >= L) && (found == false))
+    {
+        int middle = (int)(R / 1.62);
+        if (arr[middle] == num)
+        {
+            time.Stop();
+            found = true;
+            Console.WriteLine("Value '{0}' is found with index '{1}'", num, middle);
+            Console.WriteLine("Time spend : {0} ticks", time.ElapsedTicks);
+        }
+        else if (arr[middle] < num)
+        {
+            R = middle - 1;
+        }
+        else
+        {
+            L = middle + 1;
+        }
+    }
+
+    if (found ==false)
+    {
+        time.Stop();
+        Console.WriteLine("\n Value '{0}' is not exist in the array. Search time: {1} ticks",  num, time.ElapsedTicks);
+    }
+
+
+}
+/// <summary>
+///  List generation
+/// </summary>
+static void GenList(ref LinkedList<int> list, int listLen)
+{
+    var rand = new Random();
+    for (int i = 0; i < listLen; i++)
+    {
+        list.AddLast(rand.Next(50));
+    }
+    // PrintList(list);
+}
+/// <summary>
+///  List print
+/// </summary>
+static void PrintList(LinkedList<int> list)
+{
+    if (list.Count == 0)
+        Console.Write("List is empty.");
+    Console.Write("List: ");
+    Console.Write(String.Join(", ", list));
+    Console.WriteLine();
+}
+/// <summary>
+/// Brute-force search. List
+/// </summary>
+static void BruteforceSearch(LinkedList<int> list)
+{
+
+    Console.Write("Please, enter number to find: ");
+    int num = Convert.ToInt32(Console.ReadLine());
+
+    var time = new Stopwatch();
+    time.Start();
+    if (list.Contains(num))
+    {
+        time.Stop();
+        Console.WriteLine("Value '{0}' is found in list", num );
+        Console.WriteLine("Time spend : {0} ticks", time.ElapsedTicks);
+    }
+    else
+    {
+        time.Stop();
+        Console.WriteLine("\n Value '{0}' is not present in the array. Search time: {1} ticks", num, time.ElapsedTicks);
+    }
+
+}
+/// <summary>
+/// Barrier search. List
+/// </summary>
+static void BarrierSearch(LinkedList<int> list)
+{
+
+    PrintList(list);
+    Console.Write("Please, enter number to find: ");
+    int num = Convert.ToInt32(Console.ReadLine());
+    list.AddLast(num);
+
+    var time = new Stopwatch();
+    time.Start();
+
+    int i = 0;
+    while (list.ElementAt(i) != num)
+        i++;
+    time.Stop();
+
+    if (i == list.Count - 1)
+        Console.WriteLine(" Value '{0}' is not present in the array. Search time: {1} ticks", num, time.ElapsedTicks);
+    else
+        Console.WriteLine(" Value '{0}' has been found. Search Time: {1} ticks", num, time.ElapsedTicks);
+
+}
+/// <summary>
+/// Binary search. List
+/// </summary>
+static void BinarySearch(LinkedList<int> list)
+ {
+    
+            // Sorting list
+    var Sort = list.ToArray();
+    Array.Sort(Sort);
+    list = new LinkedList<int>(Sort);
+    PrintList(list);
+
+    Console.Write("Please, enter number to find: ");
+    int num = Convert.ToInt32(Console.ReadLine());
+
+    var time = new Stopwatch();
+    time.Start();
+
+    // // Binary search
+    bool found = false;
+    int L = 0;
+    int R = list.Count - 1;
+    while ((R > L) && (found == false))
+    {
+        int middle = (L + R) / 2;
+        if (list.ElementAt(middle) == num)
+        {
+            time.Stop();
+            found = true;
+            Console.WriteLine(" Value '{0}' has been found in {1} ticks", num, time.ElapsedTicks);
+        }
+        else if (list.ElementAt(middle) < num)
+        {
+            L = middle + 1;
+        }
+        else
+        {
+            R = middle - 1;
+        }
+    }
+
+    if (found==false)
+    {
+        time.Stop();
+        Console.WriteLine("\n Value '{0}' is not present in the list. Search time: {1} ticks ", num, time.ElapsedTicks);
+    }
+
+}
